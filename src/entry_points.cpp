@@ -35,6 +35,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 #include "searchsorted_f32.hpp"
 #include "kl_div_all.hpp"
 
+#include "outer_product_fwd_f32.hpp"
+
 #include "entry_points.hpp"
 
 extern "C"
@@ -103,6 +105,9 @@ gcapi::GlueCodeReturn_t GetKernelNames(_OUT_ char**         names,
            KLDivFwdF32Instance.GetKernelName(names[GAUDI_KERNEL_KL_DIV_FWD_F32]);
            KLDivAll KLDivBwdF32Instance(KLDivAll::bwd_f32);
            KLDivBwdF32Instance.GetKernelName(names[GAUDI_KERNEL_KL_DIV_BWD_F32]);
+
+           OuterProductFwdF32 OuterProductFwdF32Instance;
+           OuterProductFwdF32Instance.GetKernelName(names[GAUDI_KERNEL_OUTER_PRODUCT_FWD_F32]);
         }
 
         if (kernelCount != nullptr)
@@ -155,6 +160,14 @@ HabanaKernel(_IN_  gcapi::HabanaKernelParams_t* params,
 
     ///////---Gaudi---
     ///////////////////////////////
+
+    OuterProductFwdF32 OuterProductFwdF32Instance;
+    OuterProductFwdF32Instance.GetKernelName(kernelName);
+    if (strcmp(params->nodeName, kernelName) == 0)
+    {
+        return OuterProductFwdF32Instance.GetGcDefinitions(params,instance);
+    }
+    
     PrintfTestKernel printfInstance;
     printfInstance.GetKernelName(kernelName);
     if (strcmp(params->nodeName, kernelName) == 0)
